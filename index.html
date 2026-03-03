@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Natural Kick Energy Drink by Platinum Pine - Pure energy, natural ingredients. Order now at ₹610.">
+  <title>Natural Kick Energy Drink | Platinum Pine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="config.js"></script>
+</head>
+<body>
+  <!-- Meta Pixel - Set metaPixelId in config.js to enable -->
+
+  <header class="header">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <img src="assets/images/platinum-pine-logo.png" alt="Platinum Pine" class="logo-img">
+        <span class="logo-text">Platinum Pine</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <img src="assets/images/platinum-pine-logo.png" alt="Platinum Pine" class="hero-logo">
+          <h1 class="hero-title">Natural Kick<br><span class="accent">Energy Drink</span></h1>
+          <p class="hero-tagline">Pure energy. Natural ingredients. No compromise.</p>
+          <div class="hero-price">
+            <span class="price-current">₹610</span>
+            <span class="price-mrp">MRP ₹910</span>
+            <span class="price-badge">33% OFF</span>
+          </div>
+          <a href="checkout.html" class="btn btn-primary cta-order">
+            Order Now
+          </a>
+        </div>
+        <div class="hero-visual">
+          <div class="product-placeholder">
+            <img src="assets/images/platinum-pine-logo.png" alt="Natural Kick Energy Drink" class="product-img">
+            <p class="placeholder-text">Natural Kick</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits">
+      <div class="container">
+        <h2 class="section-title">Why Natural Kick?</h2>
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <div class="benefit-icon">⚡</div>
+            <h3>Instant Energy</h3>
+            <p>Get a natural boost without the crash. Stay focused and energized.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">🌿</div>
+            <h3>Natural Ingredients</h3>
+            <p>Made with real ingredients. No artificial flavors or harmful additives.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">✨</div>
+            <h3>Great Taste</h3>
+            <p>Refreshing flavor that keeps you coming back for more.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="container">
+        <h2 class="cta-title">Ready for a Natural Kick?</h2>
+        <p class="cta-subtitle">Order now and get 33% off. Limited time offer.</p>
+        <a href="checkout.html" class="btn btn-primary btn-large cta-order">
+          Order Now — ₹610
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Sticky CTA (Mobile) -->
+  <div class="sticky-cta">
+    <a href="checkout.html" class="btn btn-primary btn-block cta-order">
+      Order Now — ₹610
+    </a>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Platinum Pine. Natural Kick Energy Drink.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    if (typeof CONFIG !== 'undefined' && CONFIG.metaPixelId && CONFIG.metaPixelId !== 'YOUR_PIXEL_ID') {
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', CONFIG.metaPixelId);
+      fbq('track', 'PageView');
+      var n=document.createElement('noscript');n.innerHTML='<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id='+CONFIG.metaPixelId+'&ev=PageView&noscript=1"/>';document.body.appendChild(n);
+    }
+  </script>
+</body>
+</html>

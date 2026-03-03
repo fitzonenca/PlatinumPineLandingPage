@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Order Natural Kick Energy Drink - Platinum Pine">
+  <title>Order Now | Natural Kick - Platinum Pine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+  <script src="config.js"></script>
+  <script>
+    if (typeof CONFIG !== 'undefined' && CONFIG.metaPixelId && CONFIG.metaPixelId !== 'YOUR_PIXEL_ID' && !window.fbq) {
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', CONFIG.metaPixelId);
+      fbq('track', 'PageView');
+    }
+  </script>
+  <div class="checkout-page">
+    <div class="container">
+      <div class="checkout-header">
+        <a href="index.html" class="logo">
+          <img src="assets/images/platinum-pine-logo.png" alt="Platinum Pine" class="logo-img">
+        </a>
+        <h1 class="checkout-title">Natural Kick Energy Drink</h1>
+        <p class="checkout-subtitle">₹610 per unit · MRP ₹910</p>
+      </div>
+
+      <form id="order-form" class="order-form">
+        <div class="form-group">
+          <label for="name">Full Name *</label>
+          <input type="text" id="name" name="name" required placeholder="Enter your name">
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number *</label>
+          <input type="tel" id="phone" name="phone" required placeholder="10-digit mobile number">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="your@email.com">
+        </div>
+
+        <div class="address-section">
+          <h3 class="address-section-title">Delivery Address *</h3>
+          <div class="form-group">
+            <label for="address_line1">Address Line 1 *</label>
+            <input type="text" id="address_line1" name="address_line1" required placeholder="House/Flat no., Building, Street">
+          </div>
+          <div class="form-group">
+            <label for="address_line2">Address Line 2</label>
+            <input type="text" id="address_line2" name="address_line2" placeholder="Area, Landmark (optional)">
+          </div>
+          <div class="form-group form-group-pincode">
+            <label for="pincode">Pincode *</label>
+            <input type="text" id="pincode" name="pincode" required placeholder="6-digit pincode" maxlength="6" pattern="[0-9]{6}" inputmode="numeric">
+            <span class="pincode-status" id="pincode-status"></span>
+            <button type="button" class="btn-fetch-location" id="fetch-location-btn" title="Fetch location from pincode">📍 Fetch Location</button>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="city">City *</label>
+              <input type="text" id="city" name="city" required placeholder="Enter your city">
+            </div>
+            <div class="form-group">
+              <label for="district">District *</label>
+              <input type="text" id="district" name="district" required placeholder="Auto-filled from pincode">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="state">State *</label>
+            <input type="text" id="state" name="state" required placeholder="Auto-filled from pincode">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="quantity">Quantity *</label>
+          <input type="number" id="quantity" name="quantity" value="1" min="1" max="10">
+        </div>
+
+        <div class="order-summary">
+          <p><span>Price per unit</span><span>₹610</span></p>
+          <p><span>Quantity</span><span id="qty-display">1</span></p>
+          <p class="total"><span>Total</span><span id="order-total">₹610</span></p>
+        </div>
+
+        <div class="payment-method">
+          <label>Payment Method</label>
+          <label class="payment-option selected" data-method="cod">
+            <input type="radio" name="payment_method" value="cod" checked>
+            <span class="payment-label">💵 Cash on Delivery — Pay when your order arrives</span>
+          </label>
+          <label class="payment-option" data-method="online">
+            <input type="radio" name="payment_method" value="online">
+            <span class="payment-label">💳 Pay Online — Secure payment via Razorpay</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+          Place Order
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    if (typeof trackEvent === 'function') trackEvent('InitiateCheckout', { content_name: 'Natural Kick Energy Drink' });
+  </script>
+  <script>
+    // Update qty display
+    document.getElementById('quantity').addEventListener('input', function() {
+      document.getElementById('qty-display').textContent = this.value || 1;
+    });
+  </script>
+</body>
+</html>

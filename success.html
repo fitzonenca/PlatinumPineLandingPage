@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed | Platinum Pine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script src="config.js"></script>
+  <script>
+    if (typeof CONFIG !== 'undefined' && CONFIG.metaPixelId && CONFIG.metaPixelId !== 'YOUR_PIXEL_ID' && !window.fbq) {
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', CONFIG.metaPixelId);
+      fbq('track', 'PageView');
+    }
+  </script>
+  <div class="success-page">
+    <div class="success-card">
+      <div class="success-icon">✓</div>
+      <h1 class="success-title">Order Confirmed!</h1>
+      <div class="order-id-block hidden">
+        <p class="order-id-label">Your Order ID</p>
+        <p id="order-id-display" class="order-id-value"></p>
+        <p class="order-id-note">Save this ID for order tracking.</p>
+      </div>
+      <p id="success-message" class="success-message">
+        Your order is confirmed! Pay ₹610 when your order arrives. We'll call you before delivery.
+      </p>
+      <a href="index.html" class="btn btn-primary">Back to Home</a>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
