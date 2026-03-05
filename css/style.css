@@ -235,8 +235,8 @@ body {
   background: var(--gold-light);
 }
 
-.carousel-prev { left: -8px; }
-.carousel-next { right: -8px; }
+.carousel-prev { left: 8px; }
+.carousel-next { right: 8px; }
 
 .carousel-dots {
   display: flex;
@@ -291,8 +291,8 @@ body {
     height: 44px;
     font-size: 1.75rem;
   }
-  .carousel-prev { left: -12px; }
-  .carousel-next { right: -12px; }
+  .carousel-prev { left: 12px; }
+  .carousel-next { right: 12px; }
 }
 
 /* Benefits */

@@ -134,7 +134,6 @@
       if (prev) prev.onclick = function() { goTo(current - 1); };
       if (next) next.onclick = function() { goTo(current + 1); };
       dots.forEach(function(d, i) { d.onclick = function() { goTo(i); }; });
-      setInterval(function() { goTo(current + 1); }, 4000);
     })();
   </script>
   <script>
