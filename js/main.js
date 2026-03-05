@@ -195,9 +195,13 @@ if (document.getElementById('order-form')) {
             amount: orderData.amount || total * 100,
             currency: 'INR',
             name: 'Platinum Pine',
-            description: 'Natural Kick Energy Drink',
+            description: quantity > 1 
+              ? `Natural Kick Energy Drink × ${quantity} - ₹${total}` 
+              : 'Natural Kick Energy Drink - ₹610',
+            image: window.location.origin + '/assets/images/platinum-pine-logo.png',
             order_id: orderData.orderId,
             prefill: prefill,
+            theme: { color: '#c9a227' },
             handler: function (response) {
               const params = new URLSearchParams({ method: 'online', total: total, order_id: orderId });
               Object.entries(getUtmParams()).forEach(([k, v]) => params.append(k, v));
