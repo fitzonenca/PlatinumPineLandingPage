@@ -30,7 +30,8 @@
         <p class="checkout-subtitle">₹610 per unit · MRP ₹910</p>
       </div>
 
-      <form id="order-form" class="order-form">
+      <div class="checkout-layout">
+        <form id="order-form" class="order-form">
         <div class="form-group">
           <label for="name">Full Name *</label>
           <input type="text" id="name" name="name" required placeholder="Enter your name">
@@ -84,9 +85,13 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group form-group-quantity">
           <label for="quantity">Quantity *</label>
-          <input type="number" id="quantity" name="quantity" value="1" min="1" max="10">
+          <div class="quantity-selector">
+            <button type="button" class="qty-btn" id="qty-minus" aria-label="Decrease">−</button>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" max="10" inputmode="numeric">
+            <button type="button" class="qty-btn" id="qty-plus" aria-label="Increase">+</button>
+          </div>
         </div>
 
         <div class="order-summary">
@@ -111,6 +116,20 @@
           Place Order
         </button>
       </form>
+
+        <aside class="checkout-sidebar">
+          <div class="sidebar-product">
+            <img src="assets/images/platinum-pine-logo.png" alt="Natural Kick" class="sidebar-product-img">
+            <h3>Natural Kick Energy Drink</h3>
+            <p class="sidebar-price">₹610 <span class="mrp">MRP ₹910</span></p>
+          </div>
+          <div class="order-summary order-summary-sidebar">
+            <p><span>Price per unit</span><span>₹610</span></p>
+            <p><span>Quantity</span><span id="qty-display-sidebar">1</span></p>
+            <p class="total"><span>Total</span><span id="order-total-sidebar">₹610</span></p>
+          </div>
+        </aside>
+      </div>
     </div>
   </div>
 
@@ -119,9 +138,24 @@
     if (typeof trackEvent === 'function') trackEvent('InitiateCheckout', { content_name: 'Natural Kick Energy Drink' });
   </script>
   <script>
-    // Update qty display
-    document.getElementById('quantity').addEventListener('input', function() {
-      document.getElementById('qty-display').textContent = this.value || 1;
+    // Quantity +/- buttons
+    var qtyInput = document.getElementById('quantity');
+    document.getElementById('qty-minus').addEventListener('click', function() {
+      var v = parseInt(qtyInput.value) || 1;
+      if (v > 1) { qtyInput.value = v - 1; qtyInput.dispatchEvent(new Event('change')); }
+    });
+    document.getElementById('qty-plus').addEventListener('click', function() {
+      var v = parseInt(qtyInput.value) || 1;
+      if (v < 10) { qtyInput.value = v + 1; qtyInput.dispatchEvent(new Event('change')); }
+    });
+    // Update qty display (both in form and sidebar)
+    qtyInput.addEventListener('input', function() {
+      var val = this.value || 1;
+      document.getElementById('qty-display').textContent = val;
+      var sidebar = document.getElementById('qty-display-sidebar');
+      if (sidebar) sidebar.textContent = val;
+      var total = document.getElementById('order-total-sidebar');
+      if (total) total.textContent = '₹' + (610 * parseInt(val) || 610);
     });
   </script>
 </body>

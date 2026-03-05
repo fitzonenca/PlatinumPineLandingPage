@@ -87,6 +87,10 @@ if (document.getElementById('order-form')) {
     const qty = parseInt(quantityInput?.value || 1, 10);
     const total = PRICE_PER_UNIT * qty;
     if (totalDisplay) totalDisplay.textContent = `₹${total}`;
+    const sidebarTotal = document.getElementById('order-total-sidebar');
+    if (sidebarTotal) sidebarTotal.textContent = `₹${total}`;
+    const sidebarQty = document.getElementById('qty-display-sidebar');
+    if (sidebarQty) sidebarQty.textContent = qty;
   }
 
   if (quantityInput) {
