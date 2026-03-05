@@ -185,24 +185,29 @@ body {
 }
 
 .product-placeholder {
-  background: var(--bg-card);
+  background: #fff;
   border: 2px solid rgba(201, 162, 39, 0.3);
   border-radius: 24px;
-  padding: 40px;
+  padding: 24px;
   text-align: center;
-  max-width: 320px;
+  max-width: 280px;
 }
 
 .product-img {
-  width: 160px;
+  width: 140px;
   height: auto;
-  margin-bottom: 16px;
+  display: block;
+  margin: 0 auto;
 }
 
-.placeholder-text {
-  color: var(--gold);
-  font-weight: 600;
-  font-size: 1.2rem;
+@media (min-width: 768px) {
+  .product-placeholder {
+    padding: 32px;
+    max-width: 320px;
+  }
+  .product-img {
+    width: 180px;
+  }
 }
 
 /* Benefits */
@@ -411,9 +416,12 @@ body {
 }
 
 .sidebar-product-img {
-  width: 80px;
+  width: 100px;
   height: auto;
   margin-bottom: 12px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .sidebar-product h3 {
