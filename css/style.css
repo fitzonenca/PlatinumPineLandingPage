@@ -734,13 +734,63 @@ body {
 .buy2-offer-badge {
   display: inline-block;
   margin-bottom: 12px;
-  padding: 8px 14px;
-  background: rgba(34, 139, 34, 0.2);
-  border: 1px solid var(--green);
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, rgba(34, 139, 34, 0.25) 0%, rgba(201, 162, 39, 0.2) 100%);
+  border: 2px solid var(--green);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--green);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.buy2-offer-badge:hover {
+  background: rgba(34, 139, 34, 0.35);
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(34, 139, 34, 0.3);
+}
+
+.buy2-hero-banner {
+  display: block;
+  margin-bottom: 16px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, var(--green) 0%, #1a6b1a 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.buy2-hero-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(34, 139, 34, 0.4);
+}
+
+.buy2-cta-banner {
+  display: block;
+  margin-bottom: 16px;
+  padding: 16px 28px;
+  background: linear-gradient(135deg, var(--green) 0%, #1a6b1a 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.buy2-cta-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(34, 139, 34, 0.4);
 }
 
 .buy2-congrats-hint {

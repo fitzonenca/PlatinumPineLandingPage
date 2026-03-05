@@ -54,6 +54,9 @@ function appendUtmToUrl(url) {
 document.querySelectorAll('a[href="checkout.html"]').forEach(link => {
   link.href = appendUtmToUrl('checkout.html');
 });
+document.querySelectorAll('a[href="checkout.html?qty=2"]').forEach(link => {
+  link.href = appendUtmToUrl('checkout.html?qty=2');
+});
 
 // Generate unique Order ID (PP = Platinum Pine)
 function generateOrderId() {
@@ -122,6 +125,12 @@ if (document.getElementById('order-form')) {
   if (quantityInput) {
     quantityInput.addEventListener('input', updateTotal);
     quantityInput.addEventListener('change', updateTotal);
+    // Pre-fill quantity from URL (e.g. checkout.html?qty=2)
+    const urlParams = new URLSearchParams(window.location.search);
+    const qtyParam = parseInt(urlParams.get('qty') || '0', 10);
+    if (qtyParam >= 1 && qtyParam <= 10) {
+      quantityInput.value = qtyParam;
+    }
     updateTotal();
   }
 
