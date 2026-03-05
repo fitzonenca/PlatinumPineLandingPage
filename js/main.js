@@ -171,11 +171,59 @@ if (document.getElementById('order-form')) {
     submitBtn.textContent = 'Processing...';
 
     try {
-      const response = await fetch(FORMSPREE_ENDPOINT, {
+      if (paymentMethod === 'cod') {
+        const response = await fetch(FORMSPREE_ENDPOINT, {
+          method: 'POST',
+          body: formData,
+          headers: { Accept: 'application/json' }
+        });
+        if (!response.ok) {
+          const errMsg = response.status === 404
+            ? 'Formspree form not found. Check that formspreeId in config.js is correct.'
+            : 'Form submission failed. Please try again.';
+          throw new Error(errMsg);
+        }
+        trackEvent('Purchase', { value: total, currency: 'INR' });
+        const params = new URLSearchParams({ method: 'cod', total: total, order_id: orderId, quantity: quantity });
+        if (isBuy2Offer) params.set('offer', 'buy2');
+        Object.entries(getUtmParams()).forEach(([k, v]) => params.append(k, v));
+        window.location.href = 'success.html?' + params.toString();
+        return;
+      }
+
+      // Online payment: run Formspree and Razorpay create-order in parallel for faster open
+      if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_ID.startsWith('rzp_')) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Proceed to Pay';
+        alert('Razorpay not configured. Add razorpayKeyId in config.js and deploy to Netlify.\n\nSee RAZORPAY_SETUP.md');
+        return;
+      }
+      if (typeof Razorpay === 'undefined') {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Proceed to Pay';
+        alert('Razorpay script failed to load. Check your connection or disable ad blocker.');
+        return;
+      }
+
+      trackEvent('InitiateCheckout', { value: total });
+      sessionStorage.setItem('pp_order_id', orderId);
+
+      const formspreePromise = fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
         body: formData,
         headers: { Accept: 'application/json' }
       });
+      const orderPromise = fetch(RAZORPAY_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: total * 100,
+          receipt: orderId,
+          notes: { order_id: orderId }
+        })
+      });
+
+      const [response, orderRes] = await Promise.all([formspreePromise, orderPromise]);
 
       if (!response.ok) {
         const errMsg = response.status === 404
@@ -184,87 +232,48 @@ if (document.getElementById('order-form')) {
         throw new Error(errMsg);
       }
 
-      if (paymentMethod === 'cod') {
-        trackEvent('Purchase', { value: total, currency: 'INR' });
-        const params = new URLSearchParams({ method: 'cod', total: total, order_id: orderId, quantity: quantity });
-        if (isBuy2Offer) params.set('offer', 'buy2');
-        Object.entries(getUtmParams()).forEach(([k, v]) => params.append(k, v));
-        window.location.href = 'success.html?' + params.toString();
-      } else {
-        if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_ID.startsWith('rzp_')) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Proceed to Pay';
-          alert('Razorpay not configured. Add razorpayKeyId in config.js and deploy to Netlify.\n\nSee RAZORPAY_SETUP.md');
-          return;
-        }
-        trackEvent('InitiateCheckout', { value: total });
-        sessionStorage.setItem('pp_order_id', orderId);
+      const orderData = await orderRes.json();
+      if (!orderRes.ok || !orderData.orderId) throw new Error(orderData.error || 'Order creation failed');
 
-        if (typeof Razorpay === 'undefined') {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Proceed to Pay';
-          alert('Razorpay script failed to load. Check your connection or disable ad blocker.');
-          return;
-        }
-        try {
-          const orderRes = await fetch(RAZORPAY_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              amount: total * 100,
-              receipt: orderId,
-              notes: { order_id: orderId }
-            })
-          });
-          const orderData = await orderRes.json();
-          if (!orderRes.ok || !orderData.orderId) throw new Error(orderData.error || 'Order creation failed');
+      const customerName = (formData.get('name') || '').trim();
+      const customerEmail = (formData.get('email') || '').trim();
+      const phoneCountry = (formData.get('phone_country') || '+91');
+      const countryWithPlus = phoneCountry.startsWith('+') ? phoneCountry : '+' + phoneCountry;
+      const phoneNumber = (formData.get('phone') || '').replace(/\D/g, '').slice(-10);
+      const fullContact = phoneNumber.length === 10 ? countryWithPlus + phoneNumber : '';
+      formData.set('phone', fullContact || formData.get('phone'));
+      const prefill = {};
+      if (customerName) prefill.name = customerName;
+      if (customerEmail) prefill.email = customerEmail;
+      if (fullContact) prefill.contact = fullContact;
 
-          const customerName = (formData.get('name') || '').trim();
-          const customerEmail = (formData.get('email') || '').trim();
-          const phoneCountry = (formData.get('phone_country') || '+91');
-          const countryWithPlus = phoneCountry.startsWith('+') ? phoneCountry : '+' + phoneCountry;
-          const phoneNumber = (formData.get('phone') || '').replace(/\D/g, '').slice(-10);
-          const fullContact = phoneNumber.length === 10 ? countryWithPlus + phoneNumber : '';
-          formData.set('phone', fullContact || formData.get('phone'));
-          const prefill = {};
-          if (customerName) prefill.name = customerName;
-          if (customerEmail) prefill.email = customerEmail;
-          if (fullContact) prefill.contact = fullContact;
+      const logoUrl = window.location.origin + '/assets/images/platinum-pine-logo.png';
+      const productDesc = quantity > 1
+        ? 'Natural Kick Energy Drink - Qty ' + quantity + ' - Rs ' + total
+        : 'Natural Kick Energy Drink - Rs 610';
 
-          const logoUrl = window.location.origin + '/assets/images/platinum-pine-logo.png';
-          const productDesc = quantity > 1 
-            ? 'Natural Kick Energy Drink - Qty ' + quantity + ' - Rs ' + total
-            : 'Natural Kick Energy Drink - Rs 610';
+      const options = {
+        key: orderData.keyId || RAZORPAY_KEY_ID,
+        amount: orderData.amount || total * 100,
+        currency: 'INR',
+        name: 'Platinum Pine - Natural Kick',
+        description: productDesc,
+        image: logoUrl,
+        order_id: orderData.orderId,
+        prefill: prefill,
+        theme: { color: '#c9a227' },
+        notes: { product: 'Natural Kick Energy Drink', quantity: quantity.toString(), total: total.toString() },
+        handler: function (response) {
+          const params = new URLSearchParams({ method: 'online', total: total, order_id: orderId, quantity: quantity });
+          if (isBuy2Offer) params.set('offer', 'buy2');
+          Object.entries(getUtmParams()).forEach(([k, v]) => params.append(k, v));
+          window.location.href = 'success.html?' + params.toString();
+        },
+        modal: { ondismiss: function () { submitBtn.disabled = false; submitBtn.textContent = 'Proceed to Pay'; } }
+      };
 
-          const options = {
-            key: orderData.keyId || RAZORPAY_KEY_ID,
-            amount: orderData.amount || total * 100,
-            currency: 'INR',
-            name: 'Platinum Pine - Natural Kick',
-            description: productDesc,
-            image: logoUrl,
-            order_id: orderData.orderId,
-            prefill: prefill,
-            theme: { color: '#c9a227' },
-            notes: { product: 'Natural Kick Energy Drink', quantity: quantity.toString(), total: total.toString() },
-            handler: function (response) {
-              const params = new URLSearchParams({ method: 'online', total: total, order_id: orderId, quantity: quantity });
-              if (isBuy2Offer) params.set('offer', 'buy2');
-              Object.entries(getUtmParams()).forEach(([k, v]) => params.append(k, v));
-              window.location.href = 'success.html?' + params.toString();
-            },
-            modal: { ondismiss: function () { submitBtn.disabled = false; submitBtn.textContent = 'Proceed to Pay'; } }
-          };
-
-          const rzp = new Razorpay(options);
-          rzp.open();
-        } catch (rzpErr) {
-          console.error(rzpErr);
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Proceed to Pay';
-          alert('Payment failed to start. ' + (rzpErr.message || 'Deploy to Netlify and set env vars.'));
-        }
-      }
+      const rzp = new Razorpay(options);
+      rzp.open();
     } catch (err) {
       console.error(err);
       submitBtn.disabled = false;
