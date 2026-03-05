@@ -133,6 +133,18 @@ body {
   font-weight: 600;
 }
 
+.hero-free-offer {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  background: rgba(201, 162, 39, 0.15);
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--gold-light);
+  font-weight: 500;
+}
+
 /* Buttons */
 .btn {
   display: inline-block;
@@ -314,9 +326,15 @@ body {
   gap: 24px;
 }
 
+@media (min-width: 480px) {
+  .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (min-width: 768px) {
   .benefits-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -376,6 +394,14 @@ body {
   .sticky-cta {
     display: block;
   }
+}
+
+.sticky-cta-note {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.9;
+  margin-top: 2px;
 }
 
 /* Footer */
@@ -513,6 +539,13 @@ body {
   font-size: 1rem;
   margin-bottom: 8px;
   color: var(--text);
+}
+
+.sidebar-free-offer {
+  font-size: 0.85rem;
+  color: var(--green);
+  margin-top: 8px;
+  margin-bottom: 0;
 }
 
 .sidebar-price {
