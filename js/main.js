@@ -178,6 +178,14 @@ if (document.getElementById('order-form')) {
           const orderData = await orderRes.json();
           if (!orderRes.ok || !orderData.orderId) throw new Error(orderData.error || 'Order creation failed');
 
+          const customerName = formData.get('name') || '';
+          const customerEmail = formData.get('email') || '';
+          const customerPhone = (formData.get('phone') || '').replace(/\D/g, '').slice(-10);
+          const prefill = {};
+          if (customerName) prefill.name = customerName;
+          if (customerEmail) prefill.email = customerEmail;
+          if (customerPhone) prefill.contact = '+91' + customerPhone;
+
           const options = {
             key: orderData.keyId || RAZORPAY_KEY_ID,
             amount: orderData.amount || total * 100,
@@ -185,6 +193,7 @@ if (document.getElementById('order-form')) {
             name: 'Platinum Pine',
             description: 'Natural Kick Energy Drink',
             order_id: orderData.orderId,
+            prefill: Object.keys(prefill).length ? prefill : undefined,
             handler: function (response) {
               const params = new URLSearchParams({ method: 'online', total: total, order_id: orderId });
               Object.entries(getUtmParams()).forEach(([k, v]) => params.append(k, v));
