@@ -87,16 +87,19 @@
 
         <div class="form-group form-group-quantity">
           <label for="quantity">Quantity *</label>
+          <div class="buy2-offer-badge">Buy 2 Get 50% Off — Pay ₹910 for 2 units</div>
           <div class="quantity-selector">
             <button type="button" class="qty-btn" id="qty-minus" aria-label="Decrease">−</button>
             <input type="number" id="quantity" name="quantity" value="1" min="1" max="10" inputmode="numeric">
             <button type="button" class="qty-btn" id="qty-plus" aria-label="Increase">+</button>
           </div>
+          <p id="buy2-congrats-hint" class="buy2-congrats-hint" style="display:none">You're saving ₹910! Total: ₹910 for 2 units</p>
         </div>
 
         <div class="order-summary">
-          <p><span>Price per unit</span><span>₹610</span></p>
+          <p><span>Price per unit</span><span id="price-per-unit-display">₹610</span></p>
           <p><span>Quantity</span><span id="qty-display">1</span></p>
+          <p id="order-discount-row" style="display:none"><span>50% off (Buy 2)</span><span><s>₹1820</s> ₹910</span></p>
           <p><span>Free Diet Plan</span><span>₹0</span></p>
           <p class="total"><span>Total</span><span id="order-total">₹610</span></p>
         </div>
@@ -126,8 +129,9 @@
             <p class="sidebar-free-offer">Free Diet Plan (Worth ₹500) — ₹0</p>
           </div>
           <div class="order-summary order-summary-sidebar">
-            <p><span>Price per unit</span><span>₹610</span></p>
+            <p><span>Price per unit</span><span id="price-per-unit-sidebar">₹610</span></p>
             <p><span>Quantity</span><span id="qty-display-sidebar">1</span></p>
+            <p id="order-discount-row-sidebar" style="display:none"><span>50% off (Buy 2)</span><span><s>₹1820</s> ₹910</span></p>
             <p><span>Free Diet Plan</span><span>₹0</span></p>
             <p class="total"><span>Total</span><span id="order-total-sidebar">₹610</span></p>
           </div>
@@ -153,7 +157,7 @@
     if (typeof trackEvent === 'function') trackEvent('InitiateCheckout', { content_name: 'Natural Kick Energy Drink' });
   </script>
   <script>
-    // Quantity +/- buttons
+    // Quantity +/- buttons - main.js updateTotal handles all display updates
     var qtyInput = document.getElementById('quantity');
     document.getElementById('qty-minus').addEventListener('click', function() {
       var v = parseInt(qtyInput.value) || 1;
@@ -162,15 +166,6 @@
     document.getElementById('qty-plus').addEventListener('click', function() {
       var v = parseInt(qtyInput.value) || 1;
       if (v < 10) { qtyInput.value = v + 1; qtyInput.dispatchEvent(new Event('change')); }
-    });
-    // Update qty display (both in form and sidebar)
-    qtyInput.addEventListener('input', function() {
-      var val = this.value || 1;
-      document.getElementById('qty-display').textContent = val;
-      var sidebar = document.getElementById('qty-display-sidebar');
-      if (sidebar) sidebar.textContent = val;
-      var total = document.getElementById('order-total-sidebar');
-      if (total) total.textContent = '₹' + (610 * parseInt(val) || 610);
     });
   </script>
 </body>

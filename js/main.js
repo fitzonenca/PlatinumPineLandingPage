@@ -4,7 +4,17 @@
  */
 
 const PRICE_PER_UNIT = 610;
+const MRP_PER_UNIT = 910;
 const RAZORPAY_KEY_ID = (typeof CONFIG !== 'undefined' && CONFIG.razorpayKeyId) ? CONFIG.razorpayKeyId : '';
+
+// Buy 2 Get 50% Off: qty 1 = 610, qty 2 = 910, qty 3+ = 610 * qty
+function getTotalAmount(qty) {
+  if (qty <= 0) return 0;
+  if (qty === 1) return 610;
+  if (qty === 2) return 910; // 50% off MRP 1820
+  return 610 * qty;
+}
+window.getTotalAmount = getTotalAmount;
 const RAZORPAY_API_URL = (typeof CONFIG !== 'undefined' && CONFIG.razorpayApiUrl) ? CONFIG.razorpayApiUrl : (window.location.origin + '/.netlify/functions/create-order');
 const FORMSPREE_ENDPOINT = (typeof CONFIG !== 'undefined' && CONFIG.formspreeId) ? `https://formspree.io/f/${CONFIG.formspreeId}` : 'https://formspree.io/f/YOUR_FORM_ID';
 
@@ -82,15 +92,31 @@ if (document.getElementById('order-form')) {
   const totalDisplay = document.getElementById('order-total');
   const submitBtn = form.querySelector('button[type="submit"]');
 
-  // Update total on quantity change
+  // Update total on quantity change (uses getTotalAmount for Buy 2 offer)
   function updateTotal() {
-    const qty = parseInt(quantityInput?.value || 1, 10);
-    const total = PRICE_PER_UNIT * qty;
+    const qty = Math.max(1, Math.min(10, parseInt(quantityInput?.value || 1, 10)));
+    quantityInput.value = qty;
+    const total = getTotalAmount(qty);
     if (totalDisplay) totalDisplay.textContent = `₹${total}`;
     const sidebarTotal = document.getElementById('order-total-sidebar');
     if (sidebarTotal) sidebarTotal.textContent = `₹${total}`;
     const sidebarQty = document.getElementById('qty-display-sidebar');
     if (sidebarQty) sidebarQty.textContent = qty;
+    const qtyDisplay = document.getElementById('qty-display');
+    if (qtyDisplay) qtyDisplay.textContent = qty;
+    // Price per unit display
+    const pricePerUnitEl = document.getElementById('price-per-unit-display');
+    if (pricePerUnitEl) pricePerUnitEl.textContent = qty === 2 ? '₹455 (50% off)' : '₹610';
+    const pricePerUnitSidebar = document.getElementById('price-per-unit-sidebar');
+    if (pricePerUnitSidebar) pricePerUnitSidebar.textContent = qty === 2 ? '₹455 (50% off)' : '₹610';
+    // Discount line (Buy 2)
+    const discountRow = document.getElementById('order-discount-row');
+    if (discountRow) discountRow.style.display = qty === 2 ? '' : 'none';
+    const discountRowSidebar = document.getElementById('order-discount-row-sidebar');
+    if (discountRowSidebar) discountRowSidebar.style.display = qty === 2 ? '' : 'none';
+    // Congrats hint
+    const congratsHint = document.getElementById('buy2-congrats-hint');
+    if (congratsHint) congratsHint.style.display = qty === 2 ? '' : 'none';
   }
 
   if (quantityInput) {
@@ -111,8 +137,9 @@ if (document.getElementById('order-form')) {
     const formData = new FormData(form);
     const paymentMethod = formData.get('payment_method');
     const quantity = parseInt(formData.get('quantity') || 1, 10);
-    const total = PRICE_PER_UNIT * quantity;
+    const total = getTotalAmount(quantity);
     const orderId = generateOrderId();
+    const isBuy2Offer = quantity === 2;
 
     formData.append('order_id', orderId);
 
@@ -150,7 +177,8 @@ if (document.getElementById('order-form')) {
 
       if (paymentMethod === 'cod') {
         trackEvent('Purchase', { value: total, currency: 'INR' });
-        const params = new URLSearchParams({ method: 'cod', total: total, order_id: orderId });
+        const params = new URLSearchParams({ method: 'cod', total: total, order_id: orderId, quantity: quantity });
+        if (isBuy2Offer) params.set('offer', 'buy2');
         Object.entries(getUtmParams()).forEach(([k, v]) => params.append(k, v));
         window.location.href = 'success.html?' + params.toString();
       } else {
@@ -211,7 +239,8 @@ if (document.getElementById('order-form')) {
             theme: { color: '#c9a227' },
             notes: { product: 'Natural Kick Energy Drink', quantity: quantity.toString(), total: total.toString() },
             handler: function (response) {
-              const params = new URLSearchParams({ method: 'online', total: total, order_id: orderId });
+              const params = new URLSearchParams({ method: 'online', total: total, order_id: orderId, quantity: quantity });
+              if (isBuy2Offer) params.set('offer', 'buy2');
               Object.entries(getUtmParams()).forEach(([k, v]) => params.append(k, v));
               window.location.href = 'success.html?' + params.toString();
             },
@@ -279,11 +308,13 @@ if (document.getElementById('order-form')) {
   });
 }
 
-// Success page - show dynamic message + Order ID
+// Success page - show dynamic message + Order ID + Buy 2 congratulations
 if (document.getElementById('success-message') || document.getElementById('order-id-display')) {
   const params = new URLSearchParams(window.location.search);
   const method = params.get('method') || 'cod';
   const total = params.get('total') || PRICE_PER_UNIT;
+  const quantity = parseInt(params.get('quantity') || '1', 10);
+  const offerBuy2 = params.get('offer') === 'buy2' || quantity === 2;
   let orderId = params.get('order_id');
   if (!orderId) orderId = sessionStorage.getItem('pp_order_id') || '';
   if (orderId) sessionStorage.removeItem('pp_order_id');
@@ -294,9 +325,20 @@ if (document.getElementById('success-message') || document.getElementById('order
     orderIdEl.closest('.order-id-block')?.classList.remove('hidden');
   }
 
+  const congratsEl = document.getElementById('success-congrats-buy2');
+  if (congratsEl && offerBuy2) {
+    congratsEl.classList.remove('hidden');
+    const congratsText = congratsEl.querySelector('.success-congrats-text');
+    if (congratsText && method === 'cod') {
+      congratsText.innerHTML = 'You got 50% off — 2 units for just ₹910! Pay ₹910 when your order arrives.';
+    }
+  }
+
   const msgEl = document.getElementById('success-message');
   if (msgEl) {
-    if (method === 'cod') {
+    if (offerBuy2) {
+      msgEl.classList.add('hidden');
+    } else if (method === 'cod') {
       msgEl.innerHTML = `Your order is confirmed! Pay <strong>₹${total}</strong> when your order arrives. We'll call you before delivery.`;
     } else {
       msgEl.innerHTML = `Payment received! Your order is confirmed. We'll deliver to your address soon.`;

@@ -730,6 +730,26 @@ body {
   color: #e74c3c;
 }
 
+/* Buy 2 Get 50% Off */
+.buy2-offer-badge {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 8px 14px;
+  background: rgba(34, 139, 34, 0.2);
+  border: 1px solid var(--green);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--green);
+}
+
+.buy2-congrats-hint {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--gold);
+}
+
 /* Quantity selector */
 .quantity-selector {
   display: flex;
@@ -903,6 +923,31 @@ body {
   color: var(--text-muted);
   margin-bottom: 24px;
   line-height: 1.7;
+}
+
+.success-message.hidden {
+  display: none;
+}
+
+.success-congrats-buy2 {
+  margin-bottom: 24px;
+}
+
+.success-congrats-buy2.hidden {
+  display: none;
+}
+
+.success-congrats-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.success-congrats-text {
+  font-size: 1.1rem;
+  color: var(--text);
+  line-height: 1.6;
 }
 
 .success-card .btn {
