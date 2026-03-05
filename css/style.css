@@ -194,7 +194,7 @@ body {
 }
 
 .product-img {
-  width: 140px;
+  width: 170px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -203,10 +203,10 @@ body {
 @media (min-width: 768px) {
   .product-placeholder {
     padding: 32px;
-    max-width: 320px;
+    max-width: 340px;
   }
   .product-img {
-    width: 180px;
+    width: 220px;
   }
 }
 
@@ -416,7 +416,7 @@ body {
 }
 
 .sidebar-product-img {
-  width: 100px;
+  width: 120px;
   height: auto;
   margin-bottom: 12px;
   display: block;
