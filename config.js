@@ -12,5 +12,5 @@ const CONFIG = {
   // Create Order API: /.netlify/functions/create-order (when deployed on Netlify)
 
   // Meta Pixel: Your Facebook Pixel ID
-  metaPixelId: 'YOUR_PIXEL_ID'
+  metaPixelId: '758574410251016'
 };
