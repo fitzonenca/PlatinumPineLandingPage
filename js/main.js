@@ -190,18 +190,22 @@ if (document.getElementById('order-form')) {
           if (customerEmail) prefill.email = customerEmail;
           if (fullContact) prefill.contact = fullContact;
 
+          const logoUrl = window.location.origin + '/assets/images/platinum-pine-logo.png';
+          const productDesc = quantity > 1 
+            ? 'Natural Kick Energy Drink - Qty ' + quantity + ' - Rs ' + total
+            : 'Natural Kick Energy Drink - Rs 610';
+
           const options = {
             key: orderData.keyId || RAZORPAY_KEY_ID,
             amount: orderData.amount || total * 100,
             currency: 'INR',
-            name: 'Platinum Pine',
-            description: quantity > 1 
-              ? `Natural Kick Energy Drink × ${quantity} - ₹${total}` 
-              : 'Natural Kick Energy Drink - ₹610',
-            image: window.location.origin + '/assets/images/platinum-pine-logo.png',
+            name: 'Platinum Pine - Natural Kick',
+            description: productDesc,
+            image: logoUrl,
             order_id: orderData.orderId,
             prefill: prefill,
             theme: { color: '#c9a227' },
+            notes: { product: 'Natural Kick Energy Drink', quantity: quantity.toString(), total: total.toString() },
             handler: function (response) {
               const params = new URLSearchParams({ method: 'online', total: total, order_id: orderId });
               Object.entries(getUtmParams()).forEach(([k, v]) => params.append(k, v));
