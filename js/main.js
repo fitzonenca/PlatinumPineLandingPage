@@ -180,12 +180,15 @@ if (document.getElementById('order-form')) {
 
           const customerName = (formData.get('name') || '').trim();
           const customerEmail = (formData.get('email') || '').trim();
-          const rawPhone = (formData.get('phone') || '').replace(/\D/g, '');
-          const customerPhone = rawPhone.length >= 10 ? rawPhone.slice(-10) : '';
+          const phoneCountry = (formData.get('phone_country') || '+91');
+          const countryWithPlus = phoneCountry.startsWith('+') ? phoneCountry : '+' + phoneCountry;
+          const phoneNumber = (formData.get('phone') || '').replace(/\D/g, '').slice(-10);
+          const fullContact = phoneNumber.length === 10 ? countryWithPlus + phoneNumber : '';
+          formData.set('phone', fullContact || formData.get('phone'));
           const prefill = {};
           if (customerName) prefill.name = customerName;
           if (customerEmail) prefill.email = customerEmail;
-          if (customerPhone) prefill.contact = '+91' + customerPhone;
+          if (fullContact) prefill.contact = fullContact;
 
           const options = {
             key: orderData.keyId || RAZORPAY_KEY_ID,

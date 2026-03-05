@@ -355,6 +355,27 @@ body {
   resize: vertical;
 }
 
+.phone-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.phone-country {
+  width: 100px;
+  padding: 12px 10px;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 8px;
+  background: var(--bg-dark);
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.phone-input-group input {
+  flex: 1;
+}
+
 /* Address section */
 .address-section {
   background: rgba(0, 0, 0, 0.2);
