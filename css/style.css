@@ -184,6 +184,81 @@ body {
   align-items: center;
 }
 
+/* Product Carousel */
+.product-carousel {
+  position: relative;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+.carousel-track {
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-slide {
+  display: none;
+  background: #fff;
+  border: 2px solid rgba(201, 162, 39, 0.3);
+  border-radius: 24px;
+  padding: 24px;
+  text-align: center;
+}
+
+.carousel-slide.active {
+  display: block;
+  animation: carouselFade 0.4s ease;
+}
+
+@keyframes carouselFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(201, 162, 39, 0.9);
+  color: var(--purple-dark);
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.2s;
+}
+
+.carousel-btn:hover {
+  background: var(--gold-light);
+}
+
+.carousel-prev { left: -8px; }
+.carousel-next { right: -8px; }
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.carousel-dot.active {
+  background: var(--gold);
+}
+
 .product-placeholder {
   background: #fff;
   border: 2px solid rgba(201, 162, 39, 0.3);
@@ -200,14 +275,24 @@ body {
   margin: 0 auto;
 }
 
+.carousel-slide .product-img {
+  width: 170px;
+}
+
 @media (min-width: 768px) {
-  .product-placeholder {
+  .carousel-slide {
     padding: 32px;
-    max-width: 340px;
   }
-  .product-img {
+  .carousel-slide .product-img {
     width: 220px;
   }
+  .carousel-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.75rem;
+  }
+  .carousel-prev { left: -12px; }
+  .carousel-next { right: -12px; }
 }
 
 /* Benefits */

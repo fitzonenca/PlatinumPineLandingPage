@@ -41,8 +41,21 @@
           </a>
         </div>
         <div class="hero-visual">
-          <div class="product-placeholder">
-            <img src="assets/images/natural-kick-product.png" alt="Natural Kick Energy Drink - Sweet Lemon" class="product-img">
+          <div class="product-carousel">
+            <div class="carousel-track">
+              <div class="product-placeholder carousel-slide active">
+                <img src="assets/images/natural-kick-product.png" alt="Natural Kick Energy Drink - Sweet Lemon" class="product-img">
+              </div>
+              <div class="product-placeholder carousel-slide">
+                <img src="assets/images/natural-kick-product-back.png" alt="Natural Kick - Product Details" class="product-img">
+              </div>
+            </div>
+            <button type="button" class="carousel-btn carousel-prev" aria-label="Previous">‹</button>
+            <button type="button" class="carousel-btn carousel-next" aria-label="Next">›</button>
+            <div class="carousel-dots">
+              <button type="button" class="carousel-dot active" data-slide="0" aria-label="Slide 1"></button>
+              <button type="button" class="carousel-dot" data-slide="1" aria-label="Slide 2"></button>
+            </div>
           </div>
         </div>
       </div>
@@ -104,6 +117,26 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script>
+    (function() {
+      var slides = document.querySelectorAll('.carousel-slide');
+      var dots = document.querySelectorAll('.carousel-dot');
+      var prev = document.querySelector('.carousel-prev');
+      var next = document.querySelector('.carousel-next');
+      var current = 0;
+      function goTo(n) {
+        slides[current].classList.remove('active');
+        if (dots[current]) dots[current].classList.remove('active');
+        current = (n + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        if (dots[current]) dots[current].classList.add('active');
+      }
+      if (prev) prev.onclick = function() { goTo(current - 1); };
+      if (next) next.onclick = function() { goTo(current + 1); };
+      dots.forEach(function(d, i) { d.onclick = function() { goTo(i); }; });
+      setInterval(function() { goTo(current + 1); }, 4000);
+    })();
+  </script>
   <script>
     if (typeof CONFIG !== 'undefined' && CONFIG.metaPixelId && CONFIG.metaPixelId !== 'YOUR_PIXEL_ID') {
       !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
