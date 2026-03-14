@@ -12,5 +12,5 @@ const CONFIG = {
   // Create Order API: /.netlify/functions/create-order (when deployed on Netlify)
 
   // Meta Pixel: Your Facebook Pixel ID
-  metaPixelId: '758574410251016'
+  metaPixelId: '1822361765354781'  // Platinum pine landing
 };
