@@ -3,8 +3,8 @@
  * Replace these values before going live
  */
 const CONFIG = {
-  // Formspree: Only the form ID (e.g. mreawvgq), not the full URL
-  formspreeId: 'mreawvgq',
+  // Order API: Netlify function (default) or custom URL
+  // orderApiUrl: 'https://yoursite.com/.netlify/functions/submit-order',
 
   // Razorpay: Key ID from dashboard (rzp_test_xxx or rzp_live_xxx)
   razorpayKeyId: 'rzp_live_rFsMdUTSqaS9uW',

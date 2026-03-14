@@ -62,7 +62,7 @@ Netlify → Domain settings → Add custom domain → `platinumpine.in`
 ## Flow
 
 1. User fills form, selects **Pay Online**
-2. Form submits to Formspree (order saved)
+2. Form submits to order backend (Supabase)
 3. Frontend calls `/.netlify/functions/create-order` with amount (₹610 × qty)
 4. Server creates Razorpay order, returns `order_id`
 5. Razorpay Checkout popup opens

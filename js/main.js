@@ -16,7 +16,7 @@ function getTotalAmount(qty) {
 }
 window.getTotalAmount = getTotalAmount;
 const RAZORPAY_API_URL = (typeof CONFIG !== 'undefined' && CONFIG.razorpayApiUrl) ? CONFIG.razorpayApiUrl : (window.location.origin + '/.netlify/functions/create-order');
-const FORMSPREE_ENDPOINT = (typeof CONFIG !== 'undefined' && CONFIG.formspreeId) ? `https://formspree.io/f/${CONFIG.formspreeId}` : 'https://formspree.io/f/YOUR_FORM_ID';
+const ORDER_API_URL = (typeof CONFIG !== 'undefined' && CONFIG.orderApiUrl) ? CONFIG.orderApiUrl : (window.location.origin + '/.netlify/functions/submit-order');
 
 // Meta Pixel events (auto-enabled when metaPixelId set in config.js)
 function trackEvent(eventName, params = {}) {
@@ -137,12 +137,6 @@ if (document.getElementById('order-form')) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const formspreeId = (typeof CONFIG !== 'undefined' && CONFIG.formspreeId) ? CONFIG.formspreeId : '';
-    if (!formspreeId || formspreeId === 'YOUR_FORM_ID') {
-      alert('Formspree not configured. Please add your Formspree form ID in config.js.\n\n1. Go to formspree.io and create a form\n2. Copy the form ID (e.g. xyzabcde)\n3. Paste in config.js → formspreeId');
-      return;
-    }
-
     const formData = new FormData(form);
     const paymentMethod = formData.get('payment_method');
     const quantity = parseInt(formData.get('quantity') || 1, 10);
@@ -150,38 +144,44 @@ if (document.getElementById('order-form')) {
     const orderId = generateOrderId();
     const isBuy2Offer = quantity === 2;
 
-    formData.append('order_id', orderId);
+    const phoneCountry = formData.get('phone_country') || '+91';
+    const countryWithPlus = phoneCountry.startsWith('+') ? phoneCountry : '+' + phoneCountry;
+    const phoneNumber = (formData.get('phone') || '').replace(/\D/g, '').slice(-10);
+    const fullPhone = phoneNumber.length === 10 ? countryWithPlus + phoneNumber : (formData.get('phone') || '');
 
-    // Build full address for Formspree (legacy field)
-    const line1 = formData.get('address_line1') || '';
-    const line2 = formData.get('address_line2') || '';
-    const city = formData.get('city') || '';
-    const district = formData.get('district') || '';
-    const state = formData.get('state') || '';
-    const pincode = formData.get('pincode') || '';
-    formData.append('address', [line1, line2, city, district, state, pincode].filter(Boolean).join(', '));
-
-    // Add UTM params to form data
     const utm = getUtmParams();
-    Object.entries(utm).forEach(([k, v]) => formData.append(k, v));
-    formData.append('total_amount', total);
-    formData.append('payment_method', paymentMethod);
+    const orderPayload = {
+      order_id: orderId,
+      name: formData.get('name') || '',
+      phone: fullPhone,
+      email: formData.get('email') || '',
+      address_line1: formData.get('address_line1') || '',
+      address_line2: formData.get('address_line2') || '',
+      city: formData.get('city') || '',
+      district: formData.get('district') || '',
+      state: formData.get('state') || '',
+      pincode: formData.get('pincode') || '',
+      quantity: quantity,
+      total_amount: total,
+      payment_method: paymentMethod,
+      utm_source: utm.utm_source || '',
+      utm_medium: utm.utm_medium || '',
+      utm_campaign: utm.utm_campaign || ''
+    };
 
     submitBtn.disabled = true;
     submitBtn.textContent = 'Processing...';
 
     try {
       if (paymentMethod === 'cod') {
-        const response = await fetch(FORMSPREE_ENDPOINT, {
+        const response = await fetch(ORDER_API_URL, {
           method: 'POST',
-          body: formData,
-          headers: { Accept: 'application/json' }
+          body: JSON.stringify(orderPayload),
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' }
         });
+        const resData = await response.json().catch(() => ({}));
         if (!response.ok) {
-          const errMsg = response.status === 404
-            ? 'Formspree form not found. Check that formspreeId in config.js is correct.'
-            : 'Form submission failed. Please try again.';
-          throw new Error(errMsg);
+          throw new Error(resData.error || 'Order submission failed. Please try again.');
         }
         trackEvent('Purchase', { value: total, currency: 'INR' });
         const params = new URLSearchParams({ method: 'cod', total: total, order_id: orderId, quantity: quantity });
@@ -191,7 +191,7 @@ if (document.getElementById('order-form')) {
         return;
       }
 
-      // Online payment: run Formspree and Razorpay create-order in parallel for faster open
+      // Online payment: run order submit and Razorpay create-order in parallel for faster open
       if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_ID.startsWith('rzp_')) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Proceed to Pay';
@@ -208,10 +208,10 @@ if (document.getElementById('order-form')) {
       trackEvent('InitiateCheckout', { value: total });
       sessionStorage.setItem('pp_order_id', orderId);
 
-      const formspreePromise = fetch(FORMSPREE_ENDPOINT, {
+      const orderSubmitPromise = fetch(ORDER_API_URL, {
         method: 'POST',
-        body: formData,
-        headers: { Accept: 'application/json' }
+        body: JSON.stringify(orderPayload),
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' }
       });
       const orderPromise = fetch(RAZORPAY_API_URL, {
         method: 'POST',
@@ -223,25 +223,19 @@ if (document.getElementById('order-form')) {
         })
       });
 
-      const [response, orderRes] = await Promise.all([formspreePromise, orderPromise]);
+      const [response, orderRes] = await Promise.all([orderSubmitPromise, orderPromise]);
 
+      const resData = await response.json().catch(() => ({}));
       if (!response.ok) {
-        const errMsg = response.status === 404
-          ? 'Formspree form not found. Check that formspreeId in config.js is correct.'
-          : 'Form submission failed. Please try again.';
-        throw new Error(errMsg);
+        throw new Error(resData.error || 'Order submission failed. Please try again.');
       }
 
       const orderData = await orderRes.json();
       if (!orderRes.ok || !orderData.orderId) throw new Error(orderData.error || 'Order creation failed');
 
-      const customerName = (formData.get('name') || '').trim();
-      const customerEmail = (formData.get('email') || '').trim();
-      const phoneCountry = (formData.get('phone_country') || '+91');
-      const countryWithPlus = phoneCountry.startsWith('+') ? phoneCountry : '+' + phoneCountry;
-      const phoneNumber = (formData.get('phone') || '').replace(/\D/g, '').slice(-10);
-      const fullContact = phoneNumber.length === 10 ? countryWithPlus + phoneNumber : '';
-      formData.set('phone', fullContact || formData.get('phone'));
+      const customerName = (orderPayload.name || '').trim();
+      const customerEmail = (orderPayload.email || '').trim();
+      const fullContact = orderPayload.phone || '';
       const prefill = {};
       if (customerName) prefill.name = customerName;
       if (customerEmail) prefill.email = customerEmail;
